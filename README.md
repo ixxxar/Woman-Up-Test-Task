@@ -1,4 +1,4 @@
-JSDOC HTML-файлы дкоументации хранятся в папке docs
+JSDOC HTML-файлы документации хранятся в папке docs
 
 # Getting Started with Create React App
 
