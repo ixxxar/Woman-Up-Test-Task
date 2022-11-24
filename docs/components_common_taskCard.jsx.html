@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/common/taskCard.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/common/taskCard.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import editIcon from "../../../media/edit.svg";
+import { getCurrentUserId } from "../../store/users";
+import { storage } from "../../utils/firebaseConfig";
+import { toast } from "react-toastify";
+import PropTypes from "prop-types";
+import { deleteTask, finishTask, updateTask } from "../../store/tasks";
+
+/**
+ * Компонент для отображения карточек задач
+ *
+ * @component
+ */
+const TaskCard = ({ card }) => {
+    const dispatch = useDispatch();
+    const [data, setData] = useState({
+        title: card.title,
+        description: card.description,
+        date_end: card.date_end
+    });
+    const [state, setState] = useState(card.is_new ? "change" : "view");
+    const currentUserId = useSelector(getCurrentUserId());
+    /**
+     * Изменение статуса редактирования задачи
+     */
+    const handleStateChange = () => {
+        state === "view" ? setState("change") : setState("view");
+    };
+    /**
+     * Получение URL на скачивание картинки с сервера Firebase
+     * @param {String} fileUrl URL до файла на сервере
+     */
+    const getUrlToFile = (fileUrl) => {
+        getDownloadURL(ref(storage, fileUrl))
+            .then((url) => {
+                const xhr = new XMLHttpRequest();
+                xhr.responseType = "blob";
+                xhr.open("GET", url);
+                xhr.onload = () => {
+                    const blob = xhr.response;
+                    console.log(blob);
+                    const newUrl = URL.createObjectURL(blob);
+                    console.log(newUrl);
+                    const element = document.getElementById(fileUrl + "link");
+                    element.href = newUrl;
+                };
+                xhr.send();
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+    /**
+     * Запись данных из формы
+     */
+    const handleInputChange = ({ target }) => {
+        setData((prevState) => ({ ...prevState, [target.name]: target.value }));
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const file = e.target.file.files[0];
+        const dateEnd = e.target.date_end.value;
+        if (file) {
+            await uploadBytes(
+                ref(storage, `${currentUserId}/${card._id}/${file.name}`),
+                file
+            ).catch((error) => {
+                toast.error(error.message);
+            });
+        }
+        const dataToUpload = {
+            ...data,
+            _id: card._id,
+            active: true,
+            is_new: false,
+            date_end: dateEnd,
+            files: file
+                ? [`${currentUserId}/${card._id}/${file.name}`]
+                : card.files
+                ? card.files
+                : null
+        };
+
+        dispatch(updateTask(currentUserId, card._id, dataToUpload));
+        setState("view");
+
+        console.log(card.files);
+    };
+
+    const handleDeleteTask = () => {
+        dispatch(deleteTask(currentUserId, card._id));
+    };
+
+    const handleFinishTask = () => {
+        dispatch(finishTask(currentUserId, card._id));
+    };
+
+    useEffect(() => {
+        if (card.date_end) {
+            if (card.date_end.length > 0) {
+                const result = Date.compare(
+                    new Date(),
+                    Date.parse(card.date_end)
+                );
+                if (result === 1) {
+                    dispatch(finishTask(currentUserId, card._id));
+                }
+            }
+        }
+    }, []);
+
+    return (
+        &lt;>
+            {state === "view" ? (
+                &lt;div
+                    className={
+                        card.active === true ? "card" : "card finishedTask"
+                    }
+                >
+                    {card.active &amp;&amp; (
+                        &lt;button
+                            className="editButton"
+                            onClick={handleStateChange}
+                        >
+                            &lt;img src={editIcon} />
+                        &lt;/button>
+                    )}
+                    &lt;h4 className="card-title">{card.title}&lt;/h4>
+                    {card.description.length > 0 &amp;&amp; (
+                        &lt;p className="card-description">{card.description}&lt;/p>
+                    )}
+                    {card.files &amp;&amp;
+                        card.files.map((f) => {
+                            getUrlToFile(f);
+                            return (
+                                &lt;p key={f} className="card-description">
+                                    &lt;a
+                                        id={f + "link"}
+                                        href=""
+                                        download
+                                        target="_blank"
+                                    >
+                                        {f.split("/").at(-1)}
+                                    &lt;/a>
+                                &lt;/p>
+                            );
+                        })}
+                    {card.active === true ? (
+                        &lt;p className="card-description">
+                            Завершится:{" "}
+                            {card.date_end.length === 0
+                                ? "Бессрочно"
+                                : Date?.parse(card.date_end)?.toLocaleString()}
+                        &lt;/p>
+                    ) : (
+                        &lt;p className="card-description">
+                            Завершена:
+                            {Date?.parse(
+                                new Date(card.date_finished)
+                            )?.toLocaleString()}
+                        &lt;/p>
+                    )}
+                    &lt;div className="actions">
+                        {card.active &amp;&amp; (
+                            &lt;button onClick={handleFinishTask}>
+                                Завершить
+                            &lt;/button>
+                        )}
+                        &lt;button onClick={handleDeleteTask}>Удалить&lt;/button>
+                    &lt;/div>
+                &lt;/div>
+            ) : (
+                &lt;div className="card flexItems editableForm">
+                    &lt;form onSubmit={handleSubmit}>
+                        &lt;button
+                            className="editButton"
+                            onClick={handleStateChange}
+                        >
+                            &lt;img src={editIcon} />
+                        &lt;/button>
+                        &lt;h4 className="card-description">
+                            &lt;input
+                                name="title"
+                                required
+                                value={data.title}
+                                type="text"
+                                placeholder="Заголовок"
+                                onChange={handleInputChange}
+                            />
+                        &lt;/h4>
+
+                        &lt;p className="card-description">
+                            &lt;input
+                                name="description"
+                                value={data.description}
+                                type="text"
+                                placeholder="Описание"
+                                onChange={handleInputChange}
+                            />
+                        &lt;/p>
+                        &lt;p className="card-description">
+                            &lt;input name="file" type="file" />
+                        &lt;/p>
+                        &lt;p className="card-description">
+                            &lt;input
+                                name="date_end"
+                                type="datetime-local"
+                                value={data.date_end}
+                                onChange={handleInputChange}
+                            />
+                        &lt;/p>
+
+                        &lt;div className="actions">
+                            &lt;button>Сохранить&lt;/button>
+                        &lt;/div>
+                    &lt;/form>
+                &lt;/div>
+            )}
+        &lt;/>
+    );
+};
+
+TaskCard.propTypes = {
+    card: PropTypes.object
+};
+
+export default TaskCard;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Auth.html">Auth</a></li><li><a href="AuthRequired.html">AuthRequired</a></li><li><a href="Index_.html">Index</a></li><li><a href="LogOut.html">LogOut</a></li><li><a href="NavBar.html">NavBar</a></li><li><a href="TaskCard.html">TaskCard</a></li><li><a href="TasksLoader.html">TasksLoader</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authService">authService</a></li><li><a href="global.html#createNewTask">createNewTask</a></li><li><a href="global.html#createUser">createUser</a></li><li><a href="global.html#deleteTask">deleteTask</a></li><li><a href="global.html#finishTask">finishTask</a></li><li><a href="global.html#getCurrentUserData">getCurrentUserData</a></li><li><a href="global.html#getCurrentUserId">getCurrentUserId</a></li><li><a href="global.html#getIsLoggedIn">getIsLoggedIn</a></li><li><a href="global.html#getTaskById">getTaskById</a></li><li><a href="global.html#getTasksList">getTasksList</a></li><li><a href="global.html#getTasksLoadingStatus">getTasksLoadingStatus</a></li><li><a href="global.html#getUsersLoadingStatus">getUsersLoadingStatus</a></li><li><a href="global.html#http">http</a></li><li><a href="global.html#httpAuth">httpAuth</a></li><li><a href="global.html#httpService">httpService</a></li><li><a href="global.html#initialState">initialState</a></li><li><a href="global.html#loadTasks">loadTasks</a></li><li><a href="global.html#loadUser">loadUser</a></li><li><a href="global.html#localStorageService">localStorageService</a></li><li><a href="global.html#logIn">logIn</a></li><li><a href="global.html#logOut">logOut</a></li><li><a href="global.html#removeAuthData">removeAuthData</a></li><li><a href="global.html#setTokens">setTokens</a></li><li><a href="global.html#signUp">signUp</a></li><li><a href="global.html#taskService">taskService</a></li><li><a href="global.html#transformData">transformData</a></li><li><a href="global.html#updateTask">updateTask</a></li><li><a href="global.html#userService">userService</a></li><li><a href="global.html#validator">validator</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Thu Nov 24 2022 17:30:38 GMT+0300 (Москва, стандартное время)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

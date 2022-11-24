@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: store/tasks.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: store/tasks.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { createAction, createSlice } from "@reduxjs/toolkit";
+import taskService from "../services/task.service";
+
+/**
+ * Начиальное значение для задач
+ */
+const initialState = {
+    entities: [],
+    isLoading: true,
+    error: null
+};
+
+const tasksSlice = createSlice({
+    name: "tasks",
+    initialState,
+    reducers: {
+        tasksRequested: (state) => {
+            state.isLoading = true;
+        },
+        tasksRecieved: (state, action) => {
+            state.entities = action.payload;
+            state.isLoading = false;
+        },
+        taskRequestFailed: (state, action) => {
+            state.isLoading = false;
+            state.error = action.payload;
+        },
+        taskCreated: (state, action) => {
+            state.entities === null
+                ? (state.entities = [action.payload])
+                : state.entities.push(action.payload);
+        },
+        taskUpdated: (state, action) => {
+            const indexOfElement = state.entities.findIndex(
+                (e) => e._id === action.payload._id
+            );
+            state.entities[indexOfElement] = action.payload;
+        },
+        taskDeleted: (state, action) => {
+            state.entities = state.entities.filter(
+                (i) => i._id !== action.payload
+            );
+        },
+        taskFinished: (state, action) => {
+            const indexOfElement = state.entities.findIndex(
+                (e) => e._id === action.payload.taskId
+            );
+            state.entities[indexOfElement].active = false;
+            state.entities[indexOfElement].date_finished =
+                action.payload.dateFinished;
+        }
+    }
+});
+
+const { actions, reducer: tasksReducer } = tasksSlice;
+const {
+    tasksRequested,
+    tasksRecieved,
+    taskRequestFailed,
+    taskCreated,
+    taskUpdated,
+    taskDeleted,
+    taskFinished
+} = actions;
+
+const createTaskRequested = createAction("tasks/createTaskRequested");
+const updateTaskRequested = createAction("tasks/createTaskRequested");
+const deleteTaskRequested = createAction("tasks/createTaskRequested");
+/**
+ * Загрузка списка задач
+ * @param {String} userId ID пользователя
+ */
+export const loadTasks = (userId) => async (dispatch) => {
+    dispatch(tasksRequested());
+    try {
+        const { content } = await taskService.get(userId);
+        dispatch(tasksRecieved(content));
+    } catch (error) {
+        dispatch(taskRequestFailed(error.message));
+    }
+};
+
+/**
+ * Создание новой задачи
+ * @param {String} userId ID пользователя
+ * @param {Object} payload Данные задачи
+ */
+export const createNewTask = (userId, payload) => async (dispatch) => {
+    dispatch(createTaskRequested());
+    try {
+        const { content } = await taskService.createNew(userId, payload);
+        dispatch(taskCreated(content));
+    } catch (error) {
+        dispatch(taskRequestFailed(error.message));
+    }
+};
+
+/**
+ * Обновление данных задачи
+ * @param {String} userId ID пользователя
+ * @param {String} taskId ID задачи
+ * @param {Object} payload Данные задачи
+ */
+export const updateTask = (userId, taskId, payload) => async (dispatch) => {
+    dispatch(updateTaskRequested());
+    try {
+        const { content } = await taskService.update(userId, taskId, payload);
+        dispatch(taskUpdated(content));
+    } catch (error) {
+        dispatch(taskRequestFailed(error.message));
+    }
+};
+
+/**
+ * Удаление задачи
+ * @param {String} userId ID пользователя
+ * @param {String} taskId ID задачи
+ */
+export const deleteTask = (userId, taskId) => async (dispatch) => {
+    dispatch(deleteTaskRequested());
+    try {
+        const { content } = await taskService.deleteTask(userId, taskId);
+        if (content === null) {
+            dispatch(taskDeleted(taskId));
+        }
+    } catch (error) {
+        dispatch(taskRequestFailed(error.message));
+    }
+};
+
+/**
+ * Завершение задачи
+ * @param {String} userId ID пользователя
+ * @param {String} taskId ID задачи
+ */
+export const finishTask = (userId, taskId) => async (dispatch) => {
+    dispatch(updateTaskRequested());
+    try {
+        const dateFinished = Date.now();
+        await taskService.finishTask(userId, taskId, dateFinished);
+        dispatch(taskFinished({ taskId, dateFinished }));
+    } catch (error) {
+        dispatch(taskRequestFailed(error.message));
+    }
+};
+
+/**
+ * Узнать статус загрузки задач
+ */
+export const getTasksLoadingStatus = () => (state) => state.tasks.isLoading;
+
+/**
+ * Получить массив всех задач
+ */
+export const getTasksList = () => (state) => state.tasks.entities;
+
+/**
+ * Получить объект задачи по ID
+ * @param {String} taskId ID задачи
+ */
+export const getTaskById = (taskId) => (state) =>
+    state.tasks.entities.find((t) => t._id === taskId);
+
+export default tasksReducer;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Auth.html">Auth</a></li><li><a href="AuthRequired.html">AuthRequired</a></li><li><a href="Index_.html">Index</a></li><li><a href="LogOut.html">LogOut</a></li><li><a href="NavBar.html">NavBar</a></li><li><a href="TaskCard.html">TaskCard</a></li><li><a href="TasksLoader.html">TasksLoader</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authService">authService</a></li><li><a href="global.html#createNewTask">createNewTask</a></li><li><a href="global.html#createUser">createUser</a></li><li><a href="global.html#deleteTask">deleteTask</a></li><li><a href="global.html#finishTask">finishTask</a></li><li><a href="global.html#getCurrentUserData">getCurrentUserData</a></li><li><a href="global.html#getCurrentUserId">getCurrentUserId</a></li><li><a href="global.html#getIsLoggedIn">getIsLoggedIn</a></li><li><a href="global.html#getTaskById">getTaskById</a></li><li><a href="global.html#getTasksList">getTasksList</a></li><li><a href="global.html#getTasksLoadingStatus">getTasksLoadingStatus</a></li><li><a href="global.html#getUsersLoadingStatus">getUsersLoadingStatus</a></li><li><a href="global.html#http">http</a></li><li><a href="global.html#httpAuth">httpAuth</a></li><li><a href="global.html#httpService">httpService</a></li><li><a href="global.html#initialState">initialState</a></li><li><a href="global.html#loadTasks">loadTasks</a></li><li><a href="global.html#loadUser">loadUser</a></li><li><a href="global.html#localStorageService">localStorageService</a></li><li><a href="global.html#logIn">logIn</a></li><li><a href="global.html#logOut">logOut</a></li><li><a href="global.html#removeAuthData">removeAuthData</a></li><li><a href="global.html#setTokens">setTokens</a></li><li><a href="global.html#signUp">signUp</a></li><li><a href="global.html#taskService">taskService</a></li><li><a href="global.html#transformData">transformData</a></li><li><a href="global.html#updateTask">updateTask</a></li><li><a href="global.html#userService">userService</a></li><li><a href="global.html#validator">validator</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Thu Nov 24 2022 17:30:38 GMT+0300 (Москва, стандартное время)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

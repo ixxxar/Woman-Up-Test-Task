@@ -1,0 +1,191 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+.flexContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+.registerCard {
+  border: 1px solid #e0e0e0;
+  border-radius: 15px;
+  box-shadow: 1px 1px 10px #e4e4e4;
+  padding: 20px;
+  width: 400px;
+  height: 350px;
+}
+.form {
+  margin-top: 20px;
+}
+.formInput {
+  color: #636363;
+  padding: 3px;
+  padding-inline: 7px;
+  font-size: 16px;
+  width: 95%;
+  height: 25px;
+  margin-bottom: 15px;
+  margin-top: 5px;
+  border: 1px solid #bebebe;
+  border-radius: 5px;
+}
+.formInput:focus {
+  outline: 1px solid #94c0f1;
+}
+.labelText {
+  color: #636363;
+}
+.headerText {
+  margin: 0;
+  padding: 0;
+}
+.subButton {
+  font-size: 16px;
+  transition: ease-in-out 0.2s;
+  width: 100%;
+  height: 40px;
+  border-radius: 7px;
+  border: none;
+  background: #9fb3f7;
+}
+.subButton:hover {
+  cursor: pointer;
+  background: #b8c6f5;
+}
+.subButton.disButton:hover {
+  cursor: not-allowed;
+  background: #9fb3f7;
+}
+.errorHandler {
+  padding: 0;
+  margin: -10px 0 15px 0;
+  color: #f37070;
+  display: none;
+}
+.showError {
+  display: block !important;
+}
+.textToRedirect {
+  margin-top: 10px;
+}
+.redirectLink {
+  text-decoration: none;
+  color: #90a9fc;
+}
+.redirectLink:hover {
+  cursor: pointer;
+}
+.gridContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 20%);
+  justify-content: center;
+  grid-column-gap: 10px;
+  grid-row-gap: 1em;
+}
+.card {
+  width: 100%;
+  position: relative;
+  background: #a9a9ff;
+  height: 100%;
+  text-align: center;
+  border-radius: 10px;
+}
+.editButton {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  height: 25px;
+  width: 25px;
+  border-radius: 4px;
+  border: none;
+  background: #fff8ec;
+}
+.editButton:hover {
+  cursor: pointer;
+  background: #f8ecd6;
+  transition: ease-in 0.2s;
+}
+.card-description {
+  text-align: start;
+  padding: 10px;
+  font-size: 16px;
+  margin: 5px;
+  border-radius: 10px;
+  word-wrap: break-word;
+  background: #d6d6ff;
+}
+card-title {
+  font-size: 18px;
+  color: #555555;
+}
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 10px 5px 5px 0;
+  gap: 5px;
+}
+.actions button {
+  padding: 5px;
+  border-radius: 5px;
+  border: none;
+  font-size: 14px;
+  font-weight: 400;
+  background: #fff8ec;
+}
+.actions button:hover {
+  cursor: pointer;
+  background: #f8ecd6;
+  transition: ease-in 0.2s;
+}
+.flexItems {
+  display: flex;
+  flex-direction: column;
+}
+.editableForm input {
+  color: #636363;
+  padding: 3px;
+  padding-inline: 7px;
+  font-size: 16px;
+  width: 95%;
+  height: 25px;
+  margin-bottom: 15px;
+  margin-top: 5px;
+  border: 1px solid #bebebe;
+  border-radius: 5px;
+}
+.editableForm input:focus {
+  outline: 1px solid #94c0f1;
+}
+.navBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+.createNewTaskContainer {
+  margin: 15px 0 15px 0;
+  display: flex;
+  justify-content: center;
+}
+.createNewButton {
+  width: 20%;
+  padding: 5px;
+  border-radius: 5px;
+  border: none;
+  font-size: 14px;
+  font-weight: 400;
+  background: #d6d6ff;
+  transition: ease-in-out 0.15s;
+}
+.createNewButton:hover {
+  cursor: pointer;
+  background: #c6c6fc;
+}
+.finishedTask {
+  background: #ff9595 !important;
+}

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: layouts/auth.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: layouts/auth.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
+import Register from "../components/common/register";
+import { logIn, signUp } from "../store/users";
+import { validator } from "../utils/validator";
+
+/**
+ * Компонент для авторизации
+ * Использует валидацию по принципу:
+ * Проверка на валидность Email и Password
+ *
+ * @component
+ */
+
+const Auth = () => {
+    const { type } = useParams();
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const [formType, setFormType] = useState(
+        type === "register" ? type : "login"
+    );
+    const [data, setData] = useState({
+        email: "",
+        password: ""
+    });
+    const [errors, setErrors] = useState({});
+
+    const validatorConfig = {
+        email: {
+            isRequired: {
+                message: "Электронная почта обязательна для заполнения"
+            },
+            isEmail: {
+                message: "Email введен некорректно"
+            }
+        },
+        password: {
+            isRequired: {
+                message: "Пароль обязателен для заполнения"
+            },
+            isCapitalSymbol: {
+                message: "Пароль должен содержать хотя бы одну заглавную букву"
+            },
+            isContainDigit: {
+                message: "Пароль должен содержать хотя бы одно число"
+            },
+            min: {
+                message: "Пароль должен состоять минимум из 8 символов",
+                value: 8
+            }
+        }
+    };
+    useEffect(() => {
+        validate();
+    }, [data]);
+    const validate = () => {
+        const errors = validator(data, validatorConfig);
+        setErrors(errors);
+        return Object.keys(errors).length === 0;
+    };
+    const isValid = Object.keys(errors).length === 0;
+
+    const handleChange = ({ target }) => {
+        setData((prevState) => ({ ...prevState, [target.name]: target.value }));
+    };
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        if (!isValid) return;
+        if (formType === "register") {
+            await dispatch(signUp(data));
+            navigate("/");
+        } else {
+            await dispatch(logIn(data));
+            navigate("/");
+        }
+    };
+    return (
+        &lt;>
+            {formType === "register" ? (
+                &lt;div className="flexContainer">
+                    &lt;div className="registerCard">
+                        &lt;h3 className="headerText">Регистрация&lt;/h3>
+                        &lt;Register
+                            errors={errors}
+                            isValid={isValid}
+                            onChange={handleChange}
+                            onSubmit={handleSubmit}
+                            data={data}
+                            buttonText="Зарегистрироваться"
+                        />
+                        &lt;p className="textToRedirect">
+                            Уже зарегистрированы?{" "}
+                            &lt;a
+                                onClick={() => setFormType("login")}
+                                className="redirectLink"
+                            >
+                                Войти
+                            &lt;/a>
+                        &lt;/p>
+                    &lt;/div>
+                &lt;/div>
+            ) : (
+                &lt;div className="flexContainer">
+                    &lt;div className="registerCard">
+                        &lt;h3 className="headerText">Вход&lt;/h3>
+                        &lt;Register
+                            errors={errors}
+                            isValid={isValid}
+                            onChange={handleChange}
+                            onSubmit={handleSubmit}
+                            data={data}
+                            buttonText="Войти"
+                        />
+                        &lt;p className="textToRedirect">
+                            Еще не зарегистрированы?{" "}
+                            &lt;a
+                                onClick={() => setFormType("register")}
+                                className="redirectLink"
+                            >
+                                Регистрация
+                            &lt;/a>
+                        &lt;/p>
+                    &lt;/div>
+                &lt;/div>
+            )}
+        &lt;/>
+    );
+};
+
+export default Auth;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Auth.html">Auth</a></li><li><a href="AuthRequired.html">AuthRequired</a></li><li><a href="Index_.html">Index</a></li><li><a href="LogOut.html">LogOut</a></li><li><a href="NavBar.html">NavBar</a></li><li><a href="TaskCard.html">TaskCard</a></li><li><a href="TasksLoader.html">TasksLoader</a></li></ul><h3>Global</h3><ul><li><a href="global.html#authService">authService</a></li><li><a href="global.html#createNewTask">createNewTask</a></li><li><a href="global.html#createUser">createUser</a></li><li><a href="global.html#deleteTask">deleteTask</a></li><li><a href="global.html#finishTask">finishTask</a></li><li><a href="global.html#getCurrentUserData">getCurrentUserData</a></li><li><a href="global.html#getCurrentUserId">getCurrentUserId</a></li><li><a href="global.html#getIsLoggedIn">getIsLoggedIn</a></li><li><a href="global.html#getTaskById">getTaskById</a></li><li><a href="global.html#getTasksList">getTasksList</a></li><li><a href="global.html#getTasksLoadingStatus">getTasksLoadingStatus</a></li><li><a href="global.html#getUsersLoadingStatus">getUsersLoadingStatus</a></li><li><a href="global.html#http">http</a></li><li><a href="global.html#httpAuth">httpAuth</a></li><li><a href="global.html#httpService">httpService</a></li><li><a href="global.html#initialState">initialState</a></li><li><a href="global.html#loadTasks">loadTasks</a></li><li><a href="global.html#loadUser">loadUser</a></li><li><a href="global.html#localStorageService">localStorageService</a></li><li><a href="global.html#logIn">logIn</a></li><li><a href="global.html#logOut">logOut</a></li><li><a href="global.html#removeAuthData">removeAuthData</a></li><li><a href="global.html#setTokens">setTokens</a></li><li><a href="global.html#signUp">signUp</a></li><li><a href="global.html#taskService">taskService</a></li><li><a href="global.html#transformData">transformData</a></li><li><a href="global.html#updateTask">updateTask</a></li><li><a href="global.html#userService">userService</a></li><li><a href="global.html#validator">validator</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.0</a> on Thu Nov 24 2022 17:30:38 GMT+0300 (Москва, стандартное время)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

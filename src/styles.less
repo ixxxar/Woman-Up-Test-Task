@@ -1,0 +1,222 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.flexContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+}
+
+.registerCard {
+    border: 1px solid rgb(224, 224, 224);
+    border-radius: 15px;
+    box-shadow: 1px 1px 10px rgb(228, 228, 228);
+    padding: 20px;
+    width: 400px;
+    height: 350px;
+}
+
+.form {
+    margin-top: 20px;
+}
+
+.formInput {
+    color: rgb(99, 99, 99);
+    padding: 3px;
+    padding-inline: 7px;
+    font-size: 16px;
+    width: 95%;
+    height: 25px;
+    margin-bottom: 15px;
+    margin-top: 5px;
+    border: 1px solid rgb(190, 190, 190);
+    border-radius: 5px;
+
+    &:focus {
+        outline: 1px solid rgb(148, 192, 241);
+    }
+}
+
+.labelText {
+    color: rgb(99, 99, 99);
+}
+
+.headerText {
+    margin: 0;
+    padding: 0;
+}
+
+.subButton {
+    font-size: 16px;
+    transition: ease-in-out 0.2s;
+    width: 100%;
+    height: 40px;
+    border-radius: 7px;
+    border: none;
+    background: rgb(159, 179, 247);
+
+    &:hover {
+        cursor: pointer;
+        background: rgb(184, 198, 245);
+    }
+
+    &.disButton:hover {
+        cursor: not-allowed;
+        background: rgb(159, 179, 247);
+    }
+}
+
+.errorHandler {
+    padding: 0;
+    margin: -10px 0 15px 0;
+    color: rgb(243, 112, 112);
+    display: none;
+}
+
+.showError {
+    display: block !important;
+}
+
+.textToRedirect {
+    margin-top: 10px;
+}
+
+.redirectLink {
+    text-decoration: none;
+    color: rgb(144, 169, 252);
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 20%);
+    justify-content: center;
+    grid-column-gap: 10px;
+    grid-row-gap: 1em;
+}
+
+.card {
+    width: 100%;
+    position: relative;
+    background: rgb(169, 169, 255);
+    height: 100%;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.editButton {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    height: 25px;
+    width: 25px;
+    border-radius: 4px;
+    border: none;
+    background: rgb(255, 248, 236);
+
+    &:hover {
+        cursor: pointer;
+        background: rgb(248, 236, 214);
+        transition: ease-in 0.2s;
+    }
+}
+
+.card-description {
+    text-align: start;
+    padding: 10px;
+    font-size: 16px;
+    margin: 5px;
+    border-radius: 10px;
+    word-wrap: break-word;
+    background: rgb(214, 214, 255);
+}
+
+card-title {
+    font-size: 18px;
+    color: rgb(85, 85, 85);
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 10px 5px 5px 0;
+    gap: 5px;
+
+    & button {
+        padding: 5px;
+        border-radius: 5px;
+        border: none;
+        font-size: 14px;
+        font-weight: 400;
+        background: rgb(255, 248, 236);
+
+        &:hover {
+            cursor: pointer;
+            background: rgb(248, 236, 214);
+            transition: ease-in 0.2s;
+        }
+    }
+}
+
+.flexItems {
+    display: flex;
+    flex-direction: column;
+}
+
+.editableForm input {
+    color: rgb(99, 99, 99);
+    padding: 3px;
+    padding-inline: 7px;
+    font-size: 16px;
+    width: 95%;
+    height: 25px;
+    margin-bottom: 15px;
+    margin-top: 5px;
+    border: 1px solid rgb(190, 190, 190);
+    border-radius: 5px;
+
+    &:focus {
+        outline: 1px solid rgb(148, 192, 241);
+    }
+}
+
+.navBar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.createNewTaskContainer {
+    margin: 15px 0 15px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.createNewButton {
+    width: 20%;
+    padding: 5px;
+    border-radius: 5px;
+    border: none;
+    font-size: 14px;
+    font-weight: 400;
+    background: rgb(214, 214, 255);
+    transition: ease-in-out 0.15s;
+
+    &:hover {
+        cursor: pointer;
+        background: rgb(198, 198, 252);
+    }
+}
+
+.finishedTask {
+    background: rgb(255, 149, 149) !important;
+}
